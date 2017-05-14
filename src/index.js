@@ -4,6 +4,7 @@
 
 
 import './js/common/plugin';
+import './js/common/struct';
 import './js/common/common';
 import './js/common/render';
 import './js/common/commonUtil';

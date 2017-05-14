@@ -42,3 +42,13 @@ $(function(){
 	});
 });
 
+import Resource from '../../component/authority/Resource/Resource';
+nighty.Resource = {};
+nighty.Resource.render = function ({domId}) {
+	let params = {
+	};
+	ReactDom.render(
+		<Resource {...params} />,
+		document.getElementById(domId)
+	);
+};

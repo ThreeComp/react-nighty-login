@@ -6,7 +6,7 @@ import React from 'react';
 import './Login.css';
 
 let PAGE_TYPE = ["login", "register", "reset-password"];
-let STORAGE_PRE = "nighty";
+let STORAGE_PRE = "nighty_";
 
 class Login extends React.Component {
     constructor(props){
@@ -42,6 +42,7 @@ class Login extends React.Component {
         }
     }
 
+
     toLoginPage = () => {
         this.setState({
             type: PAGE_TYPE[0]
@@ -57,7 +58,7 @@ class Login extends React.Component {
             type: PAGE_TYPE[2]
         });
     };
-    
+
     /**************************************** 登录 *********************************************/
 
     static isLogin(serverBaseUrl, messageMethod){
@@ -120,12 +121,12 @@ class Login extends React.Component {
     loginSubmit = (e) => {
         e.preventDefault();
         $("#btn_login").attr("disabled","disabled");
-        
+
         let {serverBaseUrl, userHomePageUrl, adminHomePageUrl, messageMethod} = this.props;
         var publicKey = this.state.publicKey;
         var storage = window.localStorage;
         var sessionId = storage.getItem(STORAGE_PRE + "sessionId");
-        
+
         var username = $("#username").val();
         var password = $("#password").val();
         var encrypt = $.jCryption.crypt;  //使用该对象来实现加密
@@ -180,7 +181,7 @@ class Login extends React.Component {
 
 
     /**************************************** 注册 *********************************************/
-    
+
     usernameBlur = () => {
         let {serverBaseUrl} = this.props;
         $.ajax({
@@ -199,7 +200,7 @@ class Login extends React.Component {
             }
         });
     };
-    
+
     passwordBlur = () => { //验证密码的有效性
         var checkNum = /.+/; //除换行符之外的任何字符串
         if (checkNum.test($("#password").val())) {
@@ -210,7 +211,7 @@ class Login extends React.Component {
             $("#passwordPass").addClass("gray");
         }
     };
-    
+
     passwordConfirmBlur = () => {
         if ($("#passwordConfirm").val() == $("#password").val()) {
             $("#passwordConfirmPass").removeClass("gray");
@@ -220,10 +221,10 @@ class Login extends React.Component {
             $("#passwordConfirmPass").addClass("gray");
         }
     };
-    
+
     registerSubmit = (e) => {
         e.preventDefault();
-        
+
         $("#btn_register").attr("disabled","disabled");
 
         let {serverBaseUrl, userHomePageUrl, messageMethod} = this.props;
