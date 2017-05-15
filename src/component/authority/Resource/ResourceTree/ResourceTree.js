@@ -4,57 +4,47 @@
 
 import React from 'react';
 import './ResourceTree.css';
+import Tree from '../../../common/Tree/Tree';
 
 class ResourceTree extends React.Component {
-    constructor(props){
-        super(props);
-        var {} = this.props;
-        this.state = {
-        }
-    }
-
     render() {
-        var result;
-        var resourceTree = {
-            setting: {
-                data: {
-                    simpleData: {
-                        enable: true
-                    }
-                }
+        var dataList = [];
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: "http://localhost:8081/resource/allAdminResources",
+            error: function () {
+                alert("请求失败");
             },
-            resourceTreeNodes: [],
-            initData: function (url) {
-                $.ajax({
-                    type: 'GET',
-                    async: false,
-                    url: url,
-                    error: function () {
-                        alert("请求失败");
-                    },
-                    success: function (result) {
-                        var data = result.data;
-                        resourceTree.resourceTreeNodes = data.map(function (item) {
-                            return {
-                                id:item.id,
-                                pId:item.parentId,
-                                name:item.name,
-                            }
-                        });
+            success: function (result) {
+                var data = result.data;
+                dataList = data.map(function (item) {
+                    return {
+                        id:item.id,
+                        pId:item.parentId,
+                        name:item.name,
                     }
                 });
-            },
-            initTree: function (domId) {
-                $.fn.zTree.init($("#" + domId), resourceTree.setting, resourceTree.resourceTreeNodes);
             }
-        };
-        $(function () {
-            resourceTree.initData("http://localhost:8081/resource/allAdminResources");
-            resourceTree.initTree("resourceTree");
         });
+        var result;
+        var onSelect = function (selectedKey) {
+            console.log(selectedKey);
+        };
+        var onCheck = function (currentNode, checkedIds) {
+            console.log(currentNode);
+            console.log(checkedIds);
+        };
+        let params = {
+            dataList,
+            checkable: true,
+            searchable: true,
+            onCheck,
+            checkedKeys: ["201705092125"],
+        };
         result = (
             <div>
-                <ul id="resourceTree" className="ztree"></ul>
+                <Tree {...params}></Tree>
             </div>
         );
         return result;
