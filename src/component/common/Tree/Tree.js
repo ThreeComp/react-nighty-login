@@ -2,10 +2,27 @@
  * Created by chenchao on 17/5/10.
  */
 
-import React from 'react';
-import styles from './Tree.css';
+import React,{Component,PropTypes} from 'react';
+import './Tree.css';
 
-class nTree extends React.Component {
+/**
+ * 单选树/多选树
+ * 使用该组件需要以下属性：
+ * @param dataList: PropTypes.array.isRequired, 数据，元素格式为{id:'1',pId:'0',name:'test'}
+ * @param idKey: PropTypes.string, id对应的key名称，默认为'id'
+ * @param pIdKey: PropTypes.string, pId对应的key名称，默认为'pId'
+ * @param nameKey: PropTypes.string, name对应的key名称，默认为'name'
+ * @param checkable: PropTypes.bool, 不传则默认为false
+ * @param searchable: PropTypes.bool, 不传则默认为false * @param expandedKeys: PropTypes.array, //默认展开的节点Id
+ * @param checkedKeys: PropTypes.array, 当checkable为true时,默认勾选的节点Id
+ * @param selectedKey: PropTypes.string, 当checkable为false时,默认选择的节点Id
+ *
+ * 方法：
+ * @param onSelect: PropTypes.func, 当checkable为false时，需要传入该参数，当点击某个节点时会调用该方法，提供参数selectedKey（选择的节点id）
+ * @param onCheck: PropTypes.func, 当checkable为true时，需要传入该参数，当勾选某个节点时会调用该方法，提供currentNode, checkedIds两个参数
+ *      currentNode表示本次勾选或取消勾选操作的节点对象，checkedIds表示当前选中的所有节点的id列表
+ */
+class NTree extends Component {
     constructor(props) {
         super(props);
 
@@ -59,10 +76,6 @@ class nTree extends React.Component {
                 }
             }
         }
-    };
-
-    updateTree = () => {
-
     };
 
     initTree = () => {
@@ -189,31 +202,29 @@ class nTree extends React.Component {
         if (searchable){
             if (checkable){
                 result = (
-                    <div>
-                        <div>
-                            <div className="row">
-                                <div className="col-xs-10">
-                                    <div className="input-group">
-                                        <input id="searchWord" name="searchWord" type="text"
-                                               className="form-control" />
-                                        <div className="input-group-btn">
-                                            <button type="button" id="searchBtn"
-                                                    className="btn btn-default ">
-                                                <i className="fa fa-search"></i>
-                                            </button>
-                                        </div>
+                    <div className="whole_container">
+                        <div className="row">
+                            <div className="col-xs-10">
+                                <div className="input-group">
+                                    <input id="searchWord" name="searchWord" type="text"
+                                           className="form-control" />
+                                    <div className="input-group-btn">
+                                        <button type="button" id="searchBtn"
+                                                className="btn btn-default ">
+                                            <i className="fa fa-search"></i>
+                                        </button>
                                     </div>
+                                </div>
 
-                                </div>
-                                <div className="">
-                                    <button type="button" id="showSelected" className="btn btn-default">
-                                        <i className="fa fa-check-square-o"></i>
-                                    </button>
-                                </div>
                             </div>
-                            <div className="row">
-                                <ul id="tree" className="ztree"></ul>
+                            <div className="">
+                                <button type="button" id="showSelected" className="btn btn-default">
+                                    <i className="fa fa-check-square-o"></i>
+                                </button>
                             </div>
+                        </div>
+                        <div className="row tree_container">
+                            <ul id="tree" className="ztree"></ul>
                         </div>
                     </div>
                 )
@@ -244,7 +255,7 @@ class nTree extends React.Component {
         }
         else {
             result = (
-                <div className="row">
+                <div className="row tree_container">
                     <ul id="tree" className="ztree"></ul>
                 </div>
             )
@@ -252,5 +263,18 @@ class nTree extends React.Component {
         return result;
     }
 }
+NTree.propTypes = {
+    dataList: PropTypes.array.isRequired,
+    checkable: PropTypes.bool, //不传则默认为false
+    searchable: PropTypes.bool, //不传则默认为false
+    onSelect: PropTypes.func, //当checkable为false时，需要传入该参数，当点击某个节点时会调用该方法，提供参数selectedKey
+    onCheck: PropTypes.func, //当checkable为true时，需要传入该参数，当勾选某个节点时会调用该方法，提供currentNode, checkedIds两个参数
+    expandedKeys: PropTypes.array, //默认展开的节点Id
+    checkedKeys: PropTypes.array, //当checkable为true时,默认勾选的节点Id
+    selectedKey: PropTypes.string, //当checkable为false时,默认选择的节点Id
+    idKey: PropTypes.string, //id对应的key名称，默认为'id'
+    pIdKey: PropTypes.string, //pId对应的key名称，默认为'pId'
+    nameKey: PropTypes.string, //name对应的key名称，默认为'name'
+};
 
-export default nTree;
+export default NTree;

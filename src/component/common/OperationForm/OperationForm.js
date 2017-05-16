@@ -222,15 +222,4 @@ OperationForm.propTypes = {
     needButton: PropTypes.bool,
 };
 
-export default Form.create({
-    // onValuesChange: (props, values) => {
-    //   const onChange = this.props.onChange || function () {};
-    //   let key;
-    //   let value;
-    //   for (let k in values){
-    //     key = k;
-    //     value = values[k];
-    //   }
-    //   onChange(key, value);
-    // }
-})(OperationForm);
+export default Form.create()(OperationForm);

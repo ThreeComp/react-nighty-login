@@ -42,9 +42,15 @@ class ResourceTree extends React.Component {
             onCheck,
             checkedKeys: ["201705092125"],
         };
+        // var that = this;
+        // $(function () {
+        //     var tree = that.refs.tree;
+        //     tree.addNode({id:'11',pId:'0',name:'test'});
+        //     tree.deleteNode('11');
+        // });
         result = (
             <div>
-                <Tree {...params}></Tree>
+                <Tree ref="tree" {...params}></Tree>
             </div>
         );
         return result;

@@ -14,15 +14,15 @@ const OperationType = {
 /**
  * 该组件用于弹出操作弹框（编辑、查看、新增）
  * 使用该组件需要以下属性：
- * @param primaryKey: 数据源主键
+ * @param primaryKey: 数据源主键，例如'id'
  * @param operationType: 表示操作面板类型，该值为一个字符串，只能是"edit"、"create"、"read"中的一个
  * @param title: 标题
  * @param record: 该属性为一个对象，存放一个Item的key与value，如：{name:"aa",age:12}，编辑和查看需要传这个属性，新增不需要
  * @param dataModel:
  *    该参数为一个对象，该对象内部应包含以下几个属性：
  *    keys: ['name', 'age', 'sex']  必填参数
- *    labels: ['Name', 'Age', 'Sex']  可选参数，如果没有该参数，则label与key相同
- *    placeholders: ['姓名','Age','Sex']  可选参数，如果没有该参数，则placeholder与label相同
+ *    labels: ['Name', 'Age', 'Sex']  可选参数，与keys一一对应，如果没有该参数，则label与key相同
+ *    placeholders: ['姓名','Age','Sex']  可选参数，与keys一一对应，如果没有该参数，则placeholder与label相同
  *    dataOption: [...]  可选参数，目前只支持select框和checkbox的字典转换
  *        select的格式为{ key: 'sex', transform: {"1": "男", "2": "女"} }
  *        checkbox的格式为{key: 'visible',transform: {"0" : false, "1" : true}, toCheckbox: true},
