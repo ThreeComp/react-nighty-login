@@ -19,6 +19,7 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.js"></script>
     <script type="text/javascript" src="https://cdn.bootcss.com/zTree.v3/3.5.28/js/jquery.ztree.all.min.js"></script>
 
+    <script type="text/javascript" src="config.js"></script>
 </head>
 
 <style>
@@ -111,7 +112,7 @@
         $.ajax({
             type: 'GET',
             async: false,
-            url: "http://localhost:8081/resource/allAdminResources",
+            url: App.serverBaseUrl + "/resource/allAdminResources",
             error: function () {
                 alert('请求失败');
             },

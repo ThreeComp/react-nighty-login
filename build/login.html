@@ -5,13 +5,14 @@
     <title>test</title>
 
     <script type="text/javascript" src="nighty.login.js"></script>
+    <script type="text/javascript" src="config.js"></script>
 </head>
 <body>
 <div id="login"></div>
 <script>
     nighty.Login.render({
         domId: "login",
-        serverBaseUrl: "http://localhost:8081",
+        serverBaseUrl: App.serverBaseUrl,
         userHomePageUrl: "home.html",
         adminHomePageUrl: "adminHome.html"
 //        messageMethod: console.log

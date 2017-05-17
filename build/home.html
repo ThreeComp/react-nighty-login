@@ -5,14 +5,15 @@
     <title>test</title>
 
     <script type="text/javascript" src="nighty.login.js"></script>
+    <script type="text/javascript" src="config.js"></script>
 </head>
 <script>
-    nighty.Login.needLogin("http://localhost:8081", "login.html");
+    nighty.Login.needLogin(App.serverBaseUrl, "login.html");
 </script>
 <body>
 hello
 <button class="nighty_logout" 
-	data-server-base-url="http://localhost:8081" 
+	data-server-base-url="http://localhost:8081"
 	data-login-page="login.html">logout</button>
 
 </body>
