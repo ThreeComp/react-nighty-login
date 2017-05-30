@@ -3,10 +3,7 @@
  */
 
 import React, {Component,PropTypes} from 'react';
-import {Form, Input, Select, Row, Col, Button, Checkbox} from 'antd';
-
-const FormItem = Form.Item;
-const Option = Select.Option;
+import './OperationForm.css';
 
 const OperationType = {
     READ: "read",
@@ -17,21 +14,21 @@ const OperationType = {
 /**
  * 新增、编辑、查看面板
  * 使用该组件需要以下属性：
- * @param primaryKey: 数据源主键
  * @param operationType: 表示操作面板类型，该值为一个字符串，只能是"edit"、"create"、"read"中的一个
  * @param title: 标题
  * @param record: 该属性为一个对象，存放一个Item的key与value，如：{name:"aa",age:12}，编辑和查看需要传这个属性，新增不需要
- * @param dataModel:
- *    该参数为一个对象，该对象内部应包含以下几个属性：
- *    keys: ['name', 'age', 'sex']  必填参数
- *    labels: ['Name', 'Age', 'Sex']  可选参数，如果没有该参数，则label与key相同
- *    placeholders: ['姓名','Age','Sex']  可选参数，如果没有该参数，则placeholder与label相同
- *    dataOption: [...]  可选参数，目前只支持select框和checkbox的字典转换
- *        select的格式为{ key: 'sex', transform: {"1": "男", "2": "女"} }
- *        checkbox的格式为{key: 'visible',transform: {"0" : false, "1" : true}, toCheckbox: true},
- *        如果是其他复杂表单元素，则需要在父组件中做相关处理，并且需要设置dataOption，格式为：
- *            {key: 'icon', render: (value) => ( <Menu initValue={value} disabled={true}/> )}
+ * @param fields: 数组对象，元素为一个对象，对象中有以下几个键值对
+ *      key string
+ *      label string 如果不传该参数，则label与key相同
+ *      placeholder string 如果不传该参数，则placeholder与label相同
+ *      editReadOnly boolean 默认为false
+ *      createReadOnly boolean 默认为false，新增只读，如果该属性为true，则必须指定default属性
+ *      default 新增数据时的初始值
+ *      visible boolean 默认为true
+ *      validator object 表单验证，格式为bootstrap validator中的fields中的键值对的值格式
+ *      render func 复杂控件的渲染方法，提供一个参数，为一个对象，该对象有两个参数{initValue: string, disabled: boolean}
  * @param onSubmit(values): 点击确定按钮时调用的方法，values为Item各个字段的值，格式为：{name:"aa", age:undefined}
+ *
  */
 class OperationForm extends Component {
     constructor(props) {
@@ -41,154 +38,126 @@ class OperationForm extends Component {
     }
 
     getValues = () => {
-        let fieldValues;
-        const {onSubmit, dataModel:{dataOption = []}} = this.props;
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                //将checkbox的值转换为原来的值，如false转换为0，转换法则在transform中，如：{"0" : false, "1" : true}
-                for (let item of dataOption){
-                    if (item.toCheckbox && item.transform){
-                        let trans = item.transform;
-                        let key = item.key;
-                        let value = values[key];
-                        for (let k in trans){
-                            if (trans[k] == value){
-                                values[key] = k;
-                            }
-                        }
-                    }
-                }
-                fieldValues = values;
-            }
-        });
+        let fieldValues = {};
+        let {fields} = this.props;
+        for (let field of fields){
+            let key = field.key;
+            let value = $("#" + key).val();
+            fieldValues[key] = value;
+        }
         return fieldValues;
     };
 
     handleSubmit = () => {
         const values = this.getValues();
+        let onSubmit = this.props.onSubmit || function () {};
         onSubmit(values);
-    };
-    handleReset = () => {
-        this.props.form.resetFields();
     };
 
     render() {
-        const {getFieldDecorator} = this.props.form;
-        let {primaryKey, operationType, title, record, dataModel:{keys, labels, placeholders, dataOption = []}, needButton = true} = this.props;
-        labels = labels || keys;
-        placeholders = placeholders || labels;
-        const formItemLayout = {
-            labelCol: {span: 4},
-            wrapperCol: {span: 20},
+        let that = this;
+        let {operationType, title, record = {}, fields = [], needButton = true} = this.props;
+        let validator = {};
+        validator.message = 'This value is not valid';
+        validator.feedbackIcons = {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        };
+        validator.fields = {};
+        const layout = {
+            label: 2,
+            input: 10
         };
 
         //以下部分到return之前都与OperationModal中一样，除了subRender != null 部分
         let formItems = [];
-        //生成FormItem
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            const initValue = operationType == OperationType.CREATE || record[key] == undefined ? "" : record[key] + "";
-            let disabled = operationType == OperationType.READ ? true : false;
-            if (operationType == OperationType.EDIT && key == primaryKey) {
+        let initValues = [];
+        // 生成FormItem
+        for (let i = 0; i < fields.length; i++) {
+            const _key = fields[i].key;
+            const _label = fields[i].label || _key;
+            const _placeholder = fields[i].placeholder || _label;
+            const _editReadOnly = fields[i].editReadOnly || false;
+            const _createReadOnly = fields[i].createReadOnly || false; //新增只读，如果该属性为true，则必须指定default属性
+            const _default = fields[i].default; //新增数据时的初始值
+            let _visible = fields[i].visible;
+            const _render = fields[i].render; //是一个函数，提供一个参数，为一个对象，该对象有两个参数{initValue: string, disabled: boolean}
+            const _validator = fields[i].validator; //格式为bootstrap validator中的fields中的键值对的值格式
+
+            if(_visible == undefined)
+                _visible = true;
+
+            if (!!_validator)
+                validator.fields[_key] = _validator;
+
+            let initValue = "";
+            if (operationType != OperationType.CREATE && record[_key] != undefined)
+                initValue = record[_key] + "";
+            else if (operationType == OperationType.CREATE && _default != undefined)
+                initValue = _default;
+            initValues.push(initValue);
+
+            let disabled = false;
+            if (operationType == OperationType.READ || (operationType == OperationType.EDIT && _editReadOnly) || (operationType == OperationType.CREATE && _createReadOnly))
                 disabled = true;
-            }
-            //select字典转换
-            let subRender = null;
-            let trans = null;
-            let toCheckbox = false;
-            for (let item of dataOption){
-                if (key == item.key){
-                    subRender = item.render;
-                    trans = item.transform;
-                    toCheckbox = item.toCheckbox || toCheckbox;
-                    break;
-                }
-            }
+
+            let labelClassName = "col-md-" + layout.label + " control-label";
+            let inputClassName = "col-md-" + layout.input;
+
             //自定义渲染
-            if (subRender != null){
-                let labelClassName = "ant-col-" + formItemLayout.labelCol.span + " ant-form-item-label";
-                let wrapperClassName = "ant-col-" + formItemLayout.wrapperCol.span + " ant-form-item-control-wrapper";
+            if (!!_render){
                 formItems.push(
-                    <div className="ant-row ant-form-item" key={key}>
-                        <div className={labelClassName}>
-                            <label htmlFor={key} title={labels[i]}>{labels[i]}</label>
-                        </div>
-                        <div className={wrapperClassName}>
-                            <div className="ant-form-item-control">
-                                {
-                                    subRender(initValue)
-                                }
-                            </div>
+                    <div className="form-group" key={_key}>
+                        <label className={labelClassName}>{_label}</label>
+                        <div className={inputClassName}>
+                            {
+                                _render({value: initValue,disabled,})
+                            }
+                            <div id={_key + "-validate-label"} className="validate-label"></div>
                         </div>
                     </div>
                 )
             }
-            //下拉列表转换
-            else if (trans != null && !toCheckbox) { // {"1": "男", "2": "女"};
-                let options = [];
-                for (let transKey in trans) {
-                    options.push(<Option value={transKey} key={transKey}>{trans[transKey]}</Option>);
-                }
-
-                formItems.push(
-                    <FormItem {...formItemLayout} label={labels[i]} key={key}>
-                        {
-                            getFieldDecorator(key, initValue ? {initialValue: initValue} : {})(
-                                <Select
-                                    disabled={disabled}
-                                    placeholder={placeholders ? placeholders[i] : labels[i]}
-                                >
-                                    {options}
-                                </Select>
-                            )
-                        }
-                    </FormItem>
-                )
-            }
-            //checkbox转换
-            else if (toCheckbox){
-                let value;
-                //先把数据转换为bool型，比如值为0转换为false，值为1转换为true
-                //如果需要转换，此时trans的值就为转换法则，如：{"0" : false, "1" : true}，如果不需要转换，即值本来就为bool型，此时trans的值是null
-                value = record[key] || false; //默认为false
-                if (trans != null){
-                    value = trans[record[key]];
-                }
-                formItems.push(
-                    <FormItem {...formItemLayout} label={labels[i]} key={key}>
-                        {
-                            getFieldDecorator(key, {
-                                valuePropName: 'checked',
-                                initialValue: value,
-                            })(
-                                <Checkbox disabled={disabled} />
-                            )
-                        }
-                    </FormItem>
-                )
-            }
             //普通文本框
             else {
-                formItems.push(
-                    <FormItem {...formItemLayout} label={labels[i]} key={key}>
-                        {
-                            getFieldDecorator(key, {initialValue: initValue,})(
-                                <Input
-                                    disabled={disabled}
-                                    placeholder={
-                                        (() => {
-                                            if (operationType != OperationType.CREATE) {
-                                                return "";
-                                            }
-                                            return placeholders ? placeholders[i] : labels[i];
-                                        })()
-                                    }
-                                />)
-                        }
-                    </FormItem>
-                )
+                if (_visible){
+                    formItems.push(
+                        <div className="form-group" key={_key}>
+                            <label className={labelClassName}>{_label}</label>
+                            <div className={inputClassName}>
+                                <input type="text" id={_key} name={_key} disabled={disabled}
+                                       className="form-control" placeholder={_placeholder}/>
+                                <div id={_key + "-validate-label"} className="validate-label"></div>
+                            </div>
+                        </div>
+                    )
+                }
+                else {
+                    formItems.push(
+                        <input type="hidden" id={_key} name={_key} />
+                    )
+                }
             }
         }
+
+        $(function () {
+            for (let i = 0; i < fields.length; i++) {
+                $("#" + fields[i].key).val(initValues[i]);
+            }
+            $("#okBtn").click(function () {
+                /*手动验证表单，当是普通按钮时。*/
+                $('#defaultForm').data('bootstrapValidator').validate();
+                if(!$('#defaultForm').data('bootstrapValidator').isValid()){
+                    return ;
+                }
+                that.handleSubmit();
+            });
+            $("#cancelBtn").click(function () {
+
+            });
+            $('#defaultForm').bootstrapValidator(validator);
+        });
 
         return (
             <div>
@@ -196,30 +165,34 @@ class OperationForm extends Component {
                     (title) &&
                     <h2>{title}</h2>
                 }
-                <Form onSubmit={this.handleSubmit}>
-                    {formItems}
+                <div className="container">
+                    <form id="defaultForm" className="form-horizontal">
+                        {
+                            formItems
+                        }
+                    </form>
                     {
-                        (needButton && (operationType == OperationType.EDIT || operationType == OperationType.CREATE)) &&
-                        <Row>
-                            <Col span={24} style={{textAlign: 'right'}}>
-                                <Button type="primary" htmlType="submit">确定</Button>
-                                <Button style={{marginLeft: 8}} onClick={this.handleReset}>重置</Button>
-                            </Col>
-                        </Row>
+                        (!!needButton) &&
+                        (
+                            <div>
+                                <button id="cancelBtn" className="col-md-1 btn btn-primary pull-right">取消</button>
+                                <button id="okBtn" className="col-md-1 btn btn-primary pull-right" style={{marginRight:"20px"}}>确认</button>
+                            </div>
+                        )
                     }
-                </Form>
+                </div>
             </div>
         );
     }
 }
 OperationForm.propTypes = {
-    primaryKey: PropTypes.string.isRequired,
     operationType: PropTypes.string.isRequired,
     title: PropTypes.string,
     record: PropTypes.object,
-    dataModel: PropTypes.object.isRequired,
-    onSubmit: PropTypes.func,
+    fields : PropTypes.array.isRequired,
+    validator : PropTypes.object,
     needButton: PropTypes.bool,
+    onSubmit: PropTypes.func,
 };
 
-export default Form.create()(OperationForm);
+export default OperationForm;

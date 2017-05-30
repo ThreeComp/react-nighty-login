@@ -19,14 +19,32 @@ class ResourceSearchPanel extends React.Component {
         var onSearch = function (values) {
             console.log(values);
         };
-        var searchParams = {
-            keys: ['name', 'age', {key: 'sex', transform: {"1": "男", "2": "女"}}],
-            labels: ['Name', 'Age', 'Sex']
-        };
+        var fields = [
+            {
+                key: "name",
+                label: "姓名"
+            },
+            {
+                key: "age",
+                label: "年龄"
+            },
+            {
+                key: "sex",
+                label: "性别",
+                render: () => {
+                    return (
+                        <select id="sex" name="sex" className="form-control">
+                            <option value={0}>女</option>
+                            <option value={1}>男</option>
+                        </select>
+                    )
+                }
+            },
+        ];
         result = (
             <div>
                 <h3>查询</h3>
-                <SearchPanel searchParams={searchParams} onSearch={onSearch}/>
+                <SearchPanel fields={fields} onSearch={onSearch}/>
             </div>
         );
         return result;

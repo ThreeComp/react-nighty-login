@@ -4,8 +4,9 @@
 require('../plugin/bootstrap-3.3.7/bootstrap.min.css');
 require('../plugin/bootstrap-table-1.11.1/bootstrap-table.css');
 require('../plugin/ztree/jquery.ztree.css');
+require('../plugin/bootstrapValidator/bootstrapValidator.css');
 
-import 'antd/dist/antd.css';
+// import 'antd/dist/antd.css';
 
 //字体
 require('../../font/font-awesome-4.7.0/font-awesome.min.css');
@@ -19,6 +20,7 @@ import '../plugin/bootstrap-3.3.7/bootstrap.min';
 import '../plugin/bootstrap-table-1.11.1/bootstrap-table';
 import '../plugin/layer/layer';
 import '../plugin/ztree/jquery.ztree.all';
+import '../plugin/bootstrapValidator/bootstrapValidator';
 
 import '../plugin/jquery.cookie';
 import '../plugin/jbase64';

@@ -52,3 +52,14 @@ nighty.Resource.render = function ({domId}) {
 		document.getElementById(domId)
 	);
 };
+
+import OperationForm from '../../component/common/OperationForm/OperationForm';
+nighty.OperationForm = {};
+nighty.OperationForm.render = function ({domId}) {
+	let params = {
+	};
+	ReactDom.render(
+		<OperationForm {...params} />,
+		document.getElementById(domId)
+	);
+};
