@@ -17,11 +17,10 @@ class Login extends React.Component {
         storage.setItem(STORAGE_PRE + "sessionId", sessionId);
         var publicKey = "";
 
-
         $.ajax({
             type: 'GET',
             async: false,
-            url: serverBaseUrl + "/static/getPublicKey?sessionId=" + sessionId,
+            url: serverBaseUrl + "/static/connect?sessionId=" + sessionId,
             error: function () {
                 if (!!messageMethod)
                     messageMethod("请求失败");
@@ -29,9 +28,7 @@ class Login extends React.Component {
                     alert("请求失败");
             },
             success: function (result) {
-                if (result.type == "success") {
-                    publicKey = result.message;
-                }
+                publicKey = result;
             }
         });
 
@@ -169,7 +166,7 @@ class Login extends React.Component {
                     }
                     window.location.href = userHomePageUrl;
                 } else {
-                    storage.removeItem(STORAGE_PRE + 'sessionId');
+                    // storage.removeItem(STORAGE_PRE + 'sessionId');
                     storage.removeItem(STORAGE_PRE + 'token');
                     storage.removeItem(STORAGE_PRE + 'keepPassword');
                     $("#btn_login").attr("disabled",false);
@@ -266,7 +263,7 @@ class Login extends React.Component {
                     var nickname = result.data.nickname;
                     storage.setItem(STORAGE_PRE + 'nickname',nickname);
                     storage.setItem(STORAGE_PRE + 'username',username);
-                    storage.setItem(STORAGE_PRE + 'sessionId',sessionId);
+                    // storage.setItem(STORAGE_PRE + 'sessionId',sessionId);
                     storage.setItem(STORAGE_PRE + 'token',token);
                     window.location.href = userHomePageUrl;
                 } else {
