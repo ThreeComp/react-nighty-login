@@ -195,7 +195,7 @@ class OperationTable extends Component {
         let params = {
             operationType:'edit',
             title:'修改',
-            record:'',
+            record:allTableData[i],
             onSubmit : this.onUpdateData,
             fields: this.props.columnParams
         }
